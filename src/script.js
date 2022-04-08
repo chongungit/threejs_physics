@@ -52,7 +52,7 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
 world.addContactMaterial(defaultContactMaterial)
 world.defaultContactMaterial = defaultContactMaterial
 
-// physics - create shape (sphere)
+/* // physics - create shape (sphere)
 const sphereShape = new CANNON.Sphere(0.5)
 const sphereBody = new CANNON.Body( {
     mass: 1,
@@ -66,6 +66,45 @@ sphereBody.applyLocalForce(
     new CANNON.Vec3(150, 0, 0),
     new CANNON.Vec3(0, 0, 0)
 )
+*/
+
+
+/** utils */
+const createSphere = (radius, position) => {
+    // three.js mesh
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(radius, 20, 20),
+        new THREE.MeshStandardMaterial( {
+            metalness: 0.3,
+            roughness: 0.4,
+            envMap: environmentMapTexture,
+            envMapIntensity: 0.5
+        } )
+    )
+    mesh.castShadow = true
+    mesh.position.copy(position)
+    scene.add(mesh)
+
+    //CANNON.js body
+    const shape = new CANNON.Sphere(radius)
+
+    const body = new CANNON.Body( {
+        mass: 1,
+        position: new CANNON.Vec3(0, 3, 0),
+        shape: shape,
+        material: defaultMaterial
+    } )
+    body.position.copy(position)
+    world.addBody(body)
+}
+
+createSphere(
+    0.5,
+    {
+        x: 0,
+        y: 3,
+        z: 0
+    } )
 
 // physics - create shape (floor)
 const floorShape = new CANNON.Plane()
@@ -76,9 +115,7 @@ floorBody.addShape(floorShape)
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
 world.addBody(floorBody)
 
-/**
- * Test sphere
- */
+/* // sphere
 const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 32, 32),
     new THREE.MeshStandardMaterial({
@@ -91,6 +128,7 @@ const sphere = new THREE.Mesh(
 sphere.castShadow = true
 sphere.position.y = 0.5
 scene.add(sphere)
+*/
 
 /**
  * Floor
@@ -184,15 +222,16 @@ const tick = () =>
     const deltaTime = elapsedTime - oldElapsedTime
     oldElapsedTime = elapsedTime
 
-    // update physics world
+    /* // update physics world
     sphereBody.applyForce(
         new CANNON.Vec3(-0.5, 0, 0),
         sphereBody.position
     )
+    */
 
     world.step(1/60, deltaTime, 3)
 
-    sphere.position.copy(sphereBody.position)
+    // sphere.position.copy(sphereBody.position)
     /*sphere.position.x = sphereBody.position.x
     sphere.position.y = sphereBody.position.y
     sphere.position.z = sphereBody.position.z*/
