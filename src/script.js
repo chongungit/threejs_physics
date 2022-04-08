@@ -50,8 +50,9 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
     }
 )
 world.addContactMaterial(defaultContactMaterial)
+world.defaultContactMaterial = defaultContactMaterial
 
-// physics - create shape
+// physics - create shape (sphere)
 const sphereShape = new CANNON.Sphere(0.5)
 const sphereBody = new CANNON.Body( {
     mass: 1,
@@ -61,6 +62,12 @@ const sphereBody = new CANNON.Body( {
 } )
 world.addBody(sphereBody)
 
+sphereBody.applyLocalForce(
+    new CANNON.Vec3(150, 0, 0),
+    new CANNON.Vec3(0, 0, 0)
+)
+
+// physics - create shape (floor)
 const floorShape = new CANNON.Plane()
 const floorBody = new CANNON.Body()
 floorBody.material = defaultMaterial
@@ -178,6 +185,11 @@ const tick = () =>
     oldElapsedTime = elapsedTime
 
     // update physics world
+    sphereBody.applyForce(
+        new CANNON.Vec3(-0.5, 0, 0),
+        sphereBody.position
+    )
+
     world.step(1/60, deltaTime, 3)
 
     sphere.position.copy(sphereBody.position)
